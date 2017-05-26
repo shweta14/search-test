@@ -1,6 +1,5 @@
 package com.springernature.search.test.steps;
 
-import com.springernature.search.test.page.HtmlElement;
 import com.springernature.search.test.page.Page;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -15,7 +14,6 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import java.util.List;
 
-import static com.springernature.search.test.page.HtmlElement.getElementByName;
 import static com.springernature.search.test.page.Page.getPageByName;
 import static org.junit.Assert.*;
 import static org.openqa.selenium.By.*;
@@ -40,13 +38,6 @@ public class SearchSteps {
         assertEquals(page.getPageTitle(), title.getText());
     }
 
-
-    @When("^I click on (.*) (?:button|element|link)$")
-    public void I_click_on_element(String elementName) {
-        HtmlElement htmlElement = getElementByName(elementName);
-        webDriver.findElement(id(htmlElement.getId())).click();
-    }
-
     @After
     public void tearDown() {
         webDriver.quit();
@@ -62,9 +53,9 @@ public class SearchSteps {
 
     @When("^I enter the search term (.*)$")
     public void enterTheSearchTerm(String searchTerm) throws Throwable {
-        WebElement searchElement = webDriver.findElement(id(HtmlElement.SEARCH_QUERY.getId()));
+        WebElement searchElement = webDriver.findElement(id("query"));
         searchElement.sendKeys(searchTerm);
-        webDriver.findElement(id(HtmlElement.SEARCH_BUTTON.getId())).click();
+        webDriver.findElement(id("search")).click();
     }
 
     @Then("^I see (.*) (\\d+) search results$")
@@ -87,15 +78,12 @@ public class SearchSteps {
 
     }
 
-    @And("^I see below link (.*) with (.*) in search results$")
-    public void iSeeBelowLinkRESULTWithHREFLINKInSearchResults(String searchResult, String resultUrl) throws Throwable {
+    @And("^I see below link (.*) in search results$")
+    public void seeBelowSearchResult(String searchResult) throws Throwable {
         if (null != searchResult && searchResult.length() > 0) {
-            List<WebElement> results = webDriver.findElements(By.xpath("//ol[@id='results-list']/li"));
+            List<WebElement> results = webDriver.findElements(By.xpath("//a[@class='title']"));
             for (WebElement element : results) {
-                WebElement anchorElement = element.findElement(By.tagName("a"));
-                if (anchorElement.getText().equals(searchResult)) {
-                    assertEquals(searchResult, anchorElement.getText());
-                    assertTrue(anchorElement.getAttribute("href").contains(resultUrl));
+                if (element.getText().equals(searchResult)) {
                     return;
                 }
             }
