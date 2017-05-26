@@ -2,18 +2,18 @@ package com.springernature.search.test.steps;
 
 import com.springernature.search.test.page.HtmlElement;
 import com.springernature.search.test.page.Page;
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import java.util.List;
 
 import static com.springernature.search.test.page.HtmlElement.getElementByName;
 import static com.springernature.search.test.page.Page.getPageByName;
@@ -70,17 +70,15 @@ public class SearchSteps {
     @Then("^I see (.*) (\\d+) search results$")
     public void checkSearchResults(String resultType, long numberOfResults) throws Throwable {
         WebElement element = webDriver.findElement(className("number-of-search-results-and-search-terms"));
-        String value = element.getText()
-                .replaceAll(",", "")
-                .replaceAll("Result\\(s\\)", "")
-                .replaceAll(" ", "");
-        long count = Long.valueOf(value);
+        String text = element.getText();
+        String countValue = text.substring(0, text.indexOf("Result")).replaceAll(" ", "").replaceAll(",", "");
+        long count = Long.valueOf(countValue);
         switch (resultType) {
             case "atleast":
-                assertTrue("Count does not match", numberOfResults >= count);
+                assertTrue("Count does not match , expected numberOfResults:" + numberOfResults + " actual:" + count, numberOfResults <= count);
                 break;
             case "exact":
-                assertTrue("Count does not match", numberOfResults == count);
+                assertTrue("Count does not match , expected numberOfResults:" + numberOfResults + " actual:" + count, numberOfResults == count);
                 break;
             default:
                 fail("Invalid option " + resultType);
@@ -91,7 +89,17 @@ public class SearchSteps {
 
     @And("^I see below link (.*) with (.*) in search results$")
     public void iSeeBelowLinkRESULTWithHREFLINKInSearchResults(String searchResult, String resultUrl) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        if (null != searchResult && searchResult.length() > 0) {
+            List<WebElement> results = webDriver.findElements(By.xpath("//ol[@id='results-list']/li"));
+            for (WebElement element : results) {
+                WebElement anchorElement = element.findElement(By.tagName("a"));
+                if (anchorElement.getText().equals(searchResult)) {
+                    assertEquals(searchResult, anchorElement.getText());
+                    assertTrue(anchorElement.getAttribute("href").contains(resultUrl));
+                    return;
+                }
+            }
+            fail("Unable to find search result " + searchResult);
+        }
     }
 }
