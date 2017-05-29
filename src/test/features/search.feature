@@ -18,6 +18,8 @@ Feature: Springer Nature - Search Tests for GUI
       | molecular AND neurobiology       | 46161                      | Molecular Neurobiology                                                                       |
       | molecular                        | 1746641                    | Molecular Spectra and Molecular Structure                                                    |
       | neurobiology                     | 95339                      | Neurobiology                                                                                 |
+      | neurobiology*                    | 95339                      | Neurobiology                                                                                 |
+      | neur?biology                     | 95339                      | Neurobiology of Asperger Syndrome                                                                                 |
       | neurobiology  or   molecular     | 1797160                    | Comparative Molecular Neurobiology                                                           |
       | Identification near structural   | 17703                      | Identification Methods for Structural Health Monitoring                                      |
       | Identification near/1 structural | 3664                       | Identification and structural elucidation of ozonation transformation products of estrone    |
